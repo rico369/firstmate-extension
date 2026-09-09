@@ -3,39 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gmail UX Enhancer</title>
+    <title>Gmail Flow</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
     <main class="container">
-      <h1>Gmail UX Enhancer</h1>
-      <p class="hint">Account-aware colors + cleaner Gmail layout.</p>
+      <h1>Gmail Flow</h1>
+      <p class="hint">Email that works with your brain.</p>
 
-      <label class="toggle-row" for="focusModeEnabled">
-        <span>Focus mode</span>
-        <input id="focusModeEnabled" type="checkbox" />
-      </label>
-
-      <label class="field">
-        <span>Default color</span>
-        <select id="defaultColor"></select>
-      </label>
-
-      <section>
-        <div class="row header">
-          <strong>Account</strong>
-          <strong>Color</strong>
-          <span></span>
+      <section class="profiles">
+        <div class="profile-grid">
+          <button class="profile-btn" data-profile="zen">
+            <span class="profile-icon">🧘</span>
+            <span class="profile-name">Zen</span>
+          </button>
+          <button class="profile-btn" data-profile="speed">
+            <span class="profile-icon">⚡</span>
+            <span class="profile-name">Speed</span>
+          </button>
+          <button class="profile-btn" data-profile="night">
+            <span class="profile-icon">🌙</span>
+            <span class="profile-name">Night</span>
+          </button>
+          <button class="profile-btn" data-profile="focus">
+            <span class="profile-icon">🎯</span>
+            <span class="profile-name">Focus</span>
+          </button>
         </div>
-        <div id="mappingRows"></div>
       </section>
 
-      <div class="actions">
-        <button id="addMapping" type="button">Add Mapping</button>
-        <button id="saveMappings" type="button" class="primary">Save</button>
-      </div>
+      <section class="quick-toggles">
+        <label class="toggle-row">
+          <span>Show email age</span>
+          <input id="showEmailAge" type="checkbox" />
+        </label>
+        <label class="toggle-row">
+          <span>Priority badges</span>
+          <input id="showPriorityBadges" type="checkbox" />
+        </label>
+        <label class="toggle-row">
+          <span>Dark mode</span>
+          <input id="darkMode" type="checkbox" />
+        </label>
+      </section>
 
       <p id="status" class="status" aria-live="polite"></p>
+
+      <a href="https://github.com/rico369/firstmate-extension" target="_blank" class="footer-link">GitHub</a>
     </main>
 
     <script src="popup.js"></script>

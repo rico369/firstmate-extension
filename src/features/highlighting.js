@@ -1,5 +1,24 @@
 (() => {
-  const NS = (window.GmailUXFeatures = window.GmailUXFeatures || {});
+  const NS = (window.GmailFlowFeatures = window.GmailFlowFeatures || {});
+
+  const ROW_SELECTORS = [
+    '[role="main"] [role="row"]',
+    '[role="main"] tr[role="row"]',
+    '[role="main"] div[role="row"]',
+  ];
+
+  function getMailRows() {
+    const seen = new Set();
+    ROW_SELECTORS.forEach((selector) => {
+      document.querySelectorAll(selector).forEach((row) => {
+        if (!row || seen.has(row)) return;
+        const text = (row.textContent || "").trim();
+        if (text.length < 8) return;
+        seen.add(row);
+      });
+    });
+    return Array.from(seen);
+  }
 
   const ROW_SELECTORS = [
     '[role="main"] [role="row"]',
@@ -50,20 +69,20 @@
   NS.highlighting = {
     apply(settings) {
       const rows = getMailRows();
-      document.documentElement.classList.toggle("gux-highlight-unread-only", Boolean(settings.highlightUnreadOnly));
+      document.documentElement.classList.toggle("gf-highlight-unread-only", Boolean(settings.highlightUnreadOnly));
       rows.forEach((row) => {
         const unread = isUnread(row);
         const important = isImportant(row);
         const keywordMatch = hasKeyword(row, settings.highlightKeywords || []);
 
-        row.toggleAttribute("data-gux-unread", unread);
-        row.toggleAttribute("data-gux-read", !unread);
-        row.toggleAttribute("data-gux-important", important && settings.highlightImportantSenders);
-        row.toggleAttribute("data-gux-keyword", keywordMatch);
+        row.toggleAttribute("data-gf-unread", unread);
+        row.toggleAttribute("data-gf-read", !unread);
+        row.toggleAttribute("data-gf-important", important && settings.highlightImportantSenders);
+        row.toggleAttribute("data-gf-keyword", keywordMatch);
 
-        if (settings.highlightUnreadOnly) row.toggleAttribute("data-gux-muted", !unread);
-        else if (settings.dimReadEmails) row.toggleAttribute("data-gux-muted", !unread);
-        else row.removeAttribute("data-gux-muted");
+        if (settings.highlightUnreadOnly) row.toggleAttribute("data-gf-muted", !unread);
+        else if (settings.dimReadEmails) row.toggleAttribute("data-gf-muted", !unread);
+        else row.removeAttribute("data-gf-muted");
       });
     },
   };

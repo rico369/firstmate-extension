@@ -1,34 +1,136 @@
 (() => {
-  const STORAGE_KEY = "gmailCalmSettings";
+  const STORAGE_KEY = "gmailFlowSettings";
+
+  const PROFILES = {
+    zen: {
+      label: "Zen",
+      icon: "🧘",
+      description: "Muted, spacious, calm",
+      settings: {
+        hideSidebar: true,
+        hideMeet: true,
+        hideSpaces: true,
+        compactSpacing: false,
+        increaseSpacing: true,
+        largeFontMode: true,
+        contentWidth: 1000,
+        reduceContrast: true,
+        mutedColors: true,
+        lowStimulationMode: true,
+        calmMode: true,
+        hidePromotions: true,
+        hideSocial: true,
+        groupByDate: true,
+        showEmailAge: true,
+        showPriorityBadges: true,
+        animationsReduced: true,
+      },
+    },
+    speed: {
+      label: "Speed",
+      icon: "⚡",
+      description: "Compact, keyboard-first, fast",
+      settings: {
+        hideSidebar: true,
+        hideMeet: true,
+        hideSpaces: true,
+        compactSpacing: true,
+        increaseSpacing: false,
+        largeFontMode: false,
+        contentWidth: 1200,
+        reduceContrast: false,
+        mutedColors: false,
+        lowStimulationMode: false,
+        calmMode: false,
+        hidePromotions: false,
+        hideSocial: false,
+        groupByDate: false,
+        showEmailAge: true,
+        showPriorityBadges: true,
+        animationsReduced: true,
+      },
+    },
+    night: {
+      label: "Night",
+      icon: "🌙",
+      description: "Dark, warm, easy on eyes",
+      settings: {
+        hideSidebar: true,
+        hideMeet: true,
+        hideSpaces: true,
+        compactSpacing: false,
+        increaseSpacing: false,
+        largeFontMode: false,
+        contentWidth: 1100,
+        reduceContrast: true,
+        mutedColors: true,
+        lowStimulationMode: false,
+        calmMode: true,
+        darkMode: true,
+        hidePromotions: true,
+        hideSocial: false,
+        groupByDate: true,
+        showEmailAge: true,
+        showPriorityBadges: false,
+        animationsReduced: true,
+      },
+    },
+    focus: {
+      label: "Focus",
+      icon: "🎯",
+      description: "Inbox only, no distractions",
+      settings: {
+        hideSidebar: true,
+        hideMeet: true,
+        hideSpaces: true,
+        compactSpacing: false,
+        increaseSpacing: false,
+        largeFontMode: false,
+        contentWidth: 900,
+        reduceContrast: false,
+        mutedColors: false,
+        lowStimulationMode: false,
+        calmMode: false,
+        hidePromotions: true,
+        hideSocial: true,
+        groupByDate: false,
+        showEmailAge: false,
+        showPriorityBadges: true,
+        animationsReduced: true,
+      },
+    },
+  };
 
   const DEFAULT_SETTINGS = {
+    activeProfile: "zen",
     hideSidebar: true,
     hideMeet: true,
     hideSpaces: true,
-    compactSpacing: true,
-    increaseSpacing: false,
-    largeFontMode: false,
-    contentWidth: 1180,
-
+    compactSpacing: false,
+    increaseSpacing: true,
+    largeFontMode: true,
+    contentWidth: 1000,
     reduceContrast: true,
     mutedColors: true,
-    highlightUnreadOnly: false,
-    dimReadEmails: true,
-    calmMode: true,
     lowStimulationMode: true,
-
-    groupByDate: false,
-    bundleBySenderLabel: false,
-    highlightImportantSenders: true,
-    highlightKeywords: ["interview", "offer"],
-
-    pauseInbox: false,
-    hideInbox: false,
-    keyboardShortcutsEnabled: true,
-
+    calmMode: true,
+    darkMode: false,
+    hidePromotions: true,
+    hideSocial: true,
+    groupByDate: true,
+    showEmailAge: true,
+    showPriorityBadges: true,
+    animationsReduced: true,
     enableAccountColorBar: true,
     accountMappings: {},
     defaultColor: "gray",
+    highlightKeywords: ["interview", "offer", "deadline", "urgent", "action required"],
+    highlightImportantSenders: true,
+    dimReadEmails: true,
+    highlightUnreadOnly: false,
+    flowModeKey: "f",
+    focusTimerMinutes: 25,
+    enableFocusTimer: false,
   };
 
   const COLOR_PALETTE = {
@@ -164,17 +266,24 @@
   }
 
   function runFeatureModules() {
-    const features = window.GmailUXFeatures || {};
+    const features = window.GmailFlowFeatures || {};
     if (features.cleanup && typeof features.cleanup.apply === "function") features.cleanup.apply(state.settings);
     if (features.focus && typeof features.focus.apply === "function") features.focus.apply(state.settings);
-    if (features.grouping && typeof features.grouping.apply === "function") features.grouping.apply(state.settings);
     if (features.highlighting && typeof features.highlighting.apply === "function") {
       features.highlighting.apply(state.settings);
+    }
+    if (features.timeAwareness && typeof features.timeAwareness.apply === "function") {
+      features.timeAwareness.apply(state.settings);
+    }
+    if (features.priority && typeof features.priority.apply === "function") {
+      features.priority.apply(state.settings);
+    }
+    if (features.shortcuts && typeof features.shortcuts.apply === "function") {
+      features.shortcuts.apply(state.settings);
     }
   }
 
   function applyAll() {
-    // Always re-apply on debounced SPA updates. Gmail mutates DOM without URL/settings changes.
     applyAccountDifferentiation();
     runFeatureModules();
   }
@@ -217,36 +326,7 @@
     return new Promise((resolve) => {
       chrome.storage.sync.get({ [STORAGE_KEY]: DEFAULT_SETTINGS }, (result) => {
         const stored = result[STORAGE_KEY] || {};
-        const nextSettings = {
-          ...DEFAULT_SETTINGS,
-          ...stored,
-          highlightKeywords: Array.isArray(stored.highlightKeywords)
-            ? stored.highlightKeywords.map((v) => String(v).toLowerCase())
-            : [...DEFAULT_SETTINGS.highlightKeywords],
-          accountMappings: stored.accountMappings || {},
-        };
-
-        // Backward compatibility with previous popup settings keys.
-        if (!stored || Object.keys(stored).length === 0) {
-          chrome.storage.sync.get(
-            { accountMappings: {}, defaultColor: "gray", focusModeEnabled: false },
-            (legacy) => {
-              nextSettings.accountMappings = legacy.accountMappings || {};
-              nextSettings.defaultColor = legacy.defaultColor || "gray";
-              nextSettings.calmMode = Boolean(legacy.focusModeEnabled);
-              state.settings = nextSettings;
-              resolve();
-            }
-          );
-          return;
-        }
-
-        if (typeof nextSettings.calmMode === "undefined" && typeof nextSettings.focusMode !== "undefined") {
-          nextSettings.calmMode = Boolean(nextSettings.focusMode);
-        }
-        delete nextSettings.focusMode;
-
-        state.settings = nextSettings;
+        state.settings = { ...DEFAULT_SETTINGS, ...stored };
         resolve();
       });
     });
@@ -258,40 +338,29 @@
 
   function mergeSettings(patch) {
     const nextSettings = { ...state.settings, ...patch };
-    // Keep spacing modes mutually exclusive for predictable behavior.
     if (patch.compactSpacing === true) nextSettings.increaseSpacing = false;
     if (patch.increaseSpacing === true) nextSettings.compactSpacing = false;
     state.settings = nextSettings;
     persistSettings();
     scheduleApply(0);
-    if (window.GmailUX && window.GmailUX.panel) window.GmailUX.panel.refresh(state.settings);
+    if (window.GmailFlow && window.GmailFlow.panel) window.GmailFlow.panel.refresh(state.settings);
+  }
+
+  function applyProfile(profileName) {
+    const profile = PROFILES[profileName];
+    if (!profile) return;
+    mergeSettings({ ...profile.settings, activeProfile: profileName });
   }
 
   function setupPanelEvents() {
-    window.addEventListener("gux:settings:patch", (event) => {
+    window.addEventListener("gflow:settings:patch", (event) => {
       mergeSettings(event.detail || {});
     });
-    window.addEventListener("gux:settings:preset", () => {
-      mergeSettings({
-        hideSidebar: true,
-        hideMeet: true,
-        hideSpaces: true,
-        compactSpacing: true,
-        increaseSpacing: false,
-        largeFontMode: false,
-        contentWidth: 1180,
-        reduceContrast: true,
-        mutedColors: true,
-        highlightUnreadOnly: false,
-        dimReadEmails: true,
-        calmMode: true,
-        lowStimulationMode: true,
-        groupByDate: true,
-        bundleBySenderLabel: false,
-        highlightImportantSenders: false,
-        pauseInbox: false,
-        hideInbox: false,
-      });
+    window.addEventListener("gflow:settings:preset", () => {
+      applyProfile("zen");
+    });
+    window.addEventListener("gflow:profile:apply", (event) => {
+      applyProfile(event.detail);
     });
   }
 
@@ -299,14 +368,9 @@
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (areaName !== "sync" || !changes[STORAGE_KEY]) return;
       const next = changes[STORAGE_KEY].newValue || DEFAULT_SETTINGS;
-      const merged = { ...DEFAULT_SETTINGS, ...next };
-      if (typeof merged.calmMode === "undefined" && typeof merged.focusMode !== "undefined") {
-        merged.calmMode = Boolean(merged.focusMode);
-      }
-      delete merged.focusMode;
-      state.settings = merged;
+      state.settings = { ...DEFAULT_SETTINGS, ...next };
       scheduleApply(0);
-      if (window.GmailUX && window.GmailUX.panel) window.GmailUX.panel.refresh(state.settings);
+      if (window.GmailFlow && window.GmailFlow.panel) window.GmailFlow.panel.refresh(state.settings);
     });
   }
 
@@ -318,17 +382,20 @@
 
   async function init() {
     await loadSettings();
-    if (window.GmailUX && window.GmailUX.panel) window.GmailUX.panel.init(state.settings);
+    if (window.GmailFlow && window.GmailFlow.panel) window.GmailFlow.panel.init(state.settings);
     setupPanelEvents();
     setupStorageListener();
     patchHistory();
     setupObserver();
     setupEvents();
     scheduleApply(0);
-
-    // Failsafe pass for delayed Gmail updates without adding more observers.
     window.setInterval(() => scheduleApply(0), 3500);
   }
+
+  window.GmailFlow = window.GmailFlow || {};
+  window.GmailFlow.profiles = PROFILES;
+  window.GmailFlow.applyProfile = applyProfile;
+  window.GmailFlow.state = state;
 
   init();
 })();
