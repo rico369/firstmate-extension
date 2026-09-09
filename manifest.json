@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Gmail Calm UX",
+  "description": "Accessibility-first Gmail UX with calm, customizable controls.",
+  "version": "2.0.0",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://mail.google.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "css": ["src/styles.css"],
+      "js": [
+        "src/features/cleanup.js",
+        "src/features/focus.js",
+        "src/features/grouping.js",
+        "src/features/highlighting.js",
+        "src/ui-panel.js",
+        "src/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Gmail Calm UX",
+    "default_popup": "popup/popup.html"
+  }
+}

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gmail UX Enhancer</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Gmail UX Enhancer</h1>
+      <p class="hint">Account-aware colors + cleaner Gmail layout.</p>
+
+      <label class="toggle-row" for="focusModeEnabled">
+        <span>Focus mode</span>
+        <input id="focusModeEnabled" type="checkbox" />
+      </label>
+
+      <label class="field">
+        <span>Default color</span>
+        <select id="defaultColor"></select>
+      </label>
+
+      <section>
+        <div class="row header">
+          <strong>Account</strong>
+          <strong>Color</strong>
+          <span></span>
+        </div>
+        <div id="mappingRows"></div>
+      </section>
+
+      <div class="actions">
+        <button id="addMapping" type="button">Add Mapping</button>
+        <button id="saveMappings" type="button" class="primary">Save</button>
+      </div>
+
+      <p id="status" class="status" aria-live="polite"></p>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
