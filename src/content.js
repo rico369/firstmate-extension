@@ -131,6 +131,40 @@
     flowModeKey: "f",
     focusTimerMinutes: 25,
     enableFocusTimer: false,
+    // Typography
+    enhancedTypography: true,
+    fontFamily: "Atkinson Hyperlegible",
+    fontSize: 16,
+    lineHeight: 1.5,
+    letterSpacing: 0,
+    wordSpacing: 0,
+    textWidth: "comfortable",
+    // Background Tints
+    backgroundTint: "none",
+    tintTextColor: "#333",
+    // DOM Surgery
+    aggressiveSurgery: false,
+    aggressiveRightSidebar: false,
+    removeTopBanner: false,
+    removePromoTab: false,
+    removeMeetTab: false,
+    removeSpacesTab: false,
+    removeChatWidget: false,
+    removeComposeArea: false,
+    removeLeftNav: false,
+    removeSearch: false,
+    removeHelp: false,
+    removeSettingsGear: false,
+    removeAboutMe: false,
+    removeUpgrade: false,
+    removePromotionalCards: false,
+    removeCategories: false,
+    removeInboxLabels: false,
+    simplifyEmailList: false,
+    removeFooter: false,
+    // Reading Mode
+    readingMode: false,
+    chunkLongEmails: false,
   };
 
   const COLOR_PALETTE = {
@@ -280,6 +314,18 @@
     }
     if (features.shortcuts && typeof features.shortcuts.apply === "function") {
       features.shortcuts.apply(state.settings);
+    }
+    if (window.GmailFlowTypography && typeof window.GmailFlowTypography.apply === "function") {
+      window.GmailFlowTypography.apply(state.settings);
+    }
+    if (window.GmailFlowTints && typeof window.GmailFlowTints.apply === "function") {
+      window.GmailFlowTints.apply(state.settings);
+    }
+    if (window.GmailFlowSurgery && typeof window.GmailFlowSurgery.apply === "function") {
+      window.GmailFlowSurgery.apply(state.settings);
+    }
+    if (window.GmailFlowReading && typeof window.GmailFlowReading.apply === "function") {
+      window.GmailFlowReading.apply(state.settings);
     }
   }
 

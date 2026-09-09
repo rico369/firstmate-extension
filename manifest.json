@@ -17,6 +17,10 @@
         "src/features/time-awareness.js",
         "src/features/priority.js",
         "src/features/shortcuts.js",
+        "src/features/typography.js",
+        "src/features/background-tints.js",
+        "src/features/dom-surgery.js",
+        "src/features/reading-mode.js",
         "src/ui-panel.js",
         "src/content.js"
       ],

@@ -602,3 +602,131 @@ html.gf-pause-inbox [role="main"] [role="row"][data-gf-unread] {
 html.gf-highlight-unread-only [role="main"] [role="row"][data-gf-read] {
   opacity: 0.32 !important;
 }
+
+/* Font picker grid */
+.gf-font-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.gf-font-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 6px 8px;
+  border: 1px solid var(--gf-panel-border);
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  text-align: left;
+}
+
+.gf-font-btn:hover {
+  border-color: var(--gf-text);
+}
+
+.gf-font-btn.active {
+  border-color: var(--gf-text);
+  background: var(--gf-text);
+  color: #fff;
+}
+
+.gf-font-name {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.gf-font-desc {
+  font-size: 8px;
+  opacity: 0.6;
+  line-height: 1.2;
+}
+
+/* Width buttons */
+.gf-width-btns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.gf-width-btn {
+  padding: 4px 6px;
+  border: 1px solid var(--gf-panel-border);
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 9px;
+  font-family: var(--gf-font);
+  transition: all 0.1s ease;
+}
+
+.gf-width-btn:hover {
+  border-color: var(--gf-text);
+}
+
+.gf-width-btn.active {
+  border-color: var(--gf-text);
+  background: var(--gf-text);
+  color: #fff;
+}
+
+/* Tint picker grid */
+.gf-tint-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.gf-tint-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 4px;
+  border: 1px solid var(--gf-panel-border);
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.gf-tint-btn:hover {
+  border-color: var(--gf-text);
+}
+
+.gf-tint-btn.active {
+  border-color: var(--gf-text);
+  box-shadow: 0 0 0 1px var(--gf-text);
+}
+
+.gf-tint-swatch {
+  width: 24px;
+  height: 18px;
+  border-radius: 2px;
+}
+
+.gf-tint-name {
+  font-size: 8px;
+  color: var(--gf-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Surgery options */
+.gf-surgery-options {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--gf-panel-border);
+}
+
+.gf-field-small {
+  margin-bottom: 4px;
+}
+
+.gf-field-small span {
+  font-size: 10px;
+}
