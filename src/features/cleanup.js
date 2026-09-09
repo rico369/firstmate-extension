@@ -1,14 +1,14 @@
 (() => {
-  const NS = (window.GmailUXFeatures = window.GmailUXFeatures || {});
+  const NS = (window.GmailFlowFeatures = window.GmailFlowFeatures || {});
 
   function hideElement(el) {
-    if (!el || el.classList.contains("gux-hidden")) return;
-    el.classList.add("gux-hidden");
+    if (!el || el.classList.contains("gf-hidden")) return;
+    el.classList.add("gf-hidden");
   }
 
   function showElement(el) {
     if (!el) return;
-    el.classList.remove("gux-hidden");
+    el.classList.remove("gf-hidden");
   }
 
   function applyCleanup(settings) {
@@ -20,7 +20,6 @@
       else showElement(el);
     });
 
-    // Hide right utility rail by targeting known accessible tool labels.
     const tools = document.querySelectorAll(
       '[aria-label*="Calendar"], [aria-label*="Keep"], [aria-label*="Tasks"], [aria-label*="Contacts"]'
     );
@@ -49,18 +48,32 @@
         else showElement(target);
       });
     });
+
+    const tabs = document.querySelectorAll('[role="tab"]');
+    tabs.forEach((tab) => {
+      const label = (tab.getAttribute("aria-label") || tab.textContent || "").toLowerCase();
+      const isPromo = label.includes("promotions") || label.includes("promotional");
+      const isSocial = label.includes("social");
+      if (isPromo && settings.hidePromotions) hideElement(tab.closest('[role="tablist"]') || tab);
+      else if (isSocial && settings.hideSocial) hideElement(tab.closest('[role="tablist"]') || tab);
+    });
   }
 
   function applyDensity(settings) {
-    document.documentElement.classList.toggle("gux-compact-mode", Boolean(settings.compactSpacing));
-    document.documentElement.classList.toggle("gux-spacious-mode", Boolean(settings.increaseSpacing));
-    document.documentElement.classList.toggle("gux-large-font", Boolean(settings.largeFontMode));
+    const html = document.documentElement;
+    html.classList.toggle("gf-compact-mode", Boolean(settings.compactSpacing));
+    html.classList.toggle("gf-spacious-mode", Boolean(settings.increaseSpacing));
+    html.classList.toggle("gf-large-font", Boolean(settings.largeFontMode));
+    html.classList.toggle("gf-reduced-motion", Boolean(settings.animationsReduced));
+    html.classList.toggle("gf-dark-mode", Boolean(settings.darkMode));
   }
 
   function applyVisualCalm(settings) {
-    document.documentElement.classList.toggle("gux-reduce-contrast", Boolean(settings.reduceContrast));
-    document.documentElement.classList.toggle("gux-muted-colors", Boolean(settings.mutedColors));
-    document.documentElement.classList.toggle("gux-low-stimulation", Boolean(settings.lowStimulationMode));
+    const html = document.documentElement;
+    html.classList.toggle("gf-reduce-contrast", Boolean(settings.reduceContrast));
+    html.classList.toggle("gf-muted-colors", Boolean(settings.mutedColors));
+    html.classList.toggle("gf-low-stimulation", Boolean(settings.lowStimulationMode));
+    html.classList.toggle("gf-calm-mode", Boolean(settings.calmMode));
   }
 
   NS.cleanup = {

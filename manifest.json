@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Gmail Calm UX",
-  "description": "Accessibility-first Gmail UX with calm, customizable controls.",
-  "version": "2.0.0",
+  "name": "Gmail Flow",
+  "description": "Email that works with your brain. Fast, calm, and neurodivergent-friendly Gmail.",
+  "version": "1.0.0",
   "permissions": ["storage", "activeTab"],
   "host_permissions": ["https://mail.google.com/*"],
   "content_scripts": [
@@ -10,10 +10,17 @@
       "matches": ["https://mail.google.com/*"],
       "css": ["src/styles.css"],
       "js": [
+        "src/utils.js",
         "src/features/cleanup.js",
         "src/features/focus.js",
-        "src/features/grouping.js",
         "src/features/highlighting.js",
+        "src/features/time-awareness.js",
+        "src/features/priority.js",
+        "src/features/shortcuts.js",
+        "src/features/typography.js",
+        "src/features/background-tints.js",
+        "src/features/dom-surgery.js",
+        "src/features/reading-mode.js",
         "src/ui-panel.js",
         "src/content.js"
       ],
@@ -21,7 +28,7 @@
     }
   ],
   "action": {
-    "default_title": "Gmail Calm UX",
+    "default_title": "Gmail Flow",
     "default_popup": "popup/popup.html"
   }
 }
