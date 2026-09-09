@@ -1,10 +1,11 @@
 :root {
   --gf-account-color: #5f6368;
   --gf-content-width: 1000px;
-  --gf-panel-bg: #f7f8fa;
-  --gf-panel-border: #e2e5ea;
-  --gf-text: #202124;
-  --gf-muted: #5f6368;
+  --gf-panel-bg: #fafafa;
+  --gf-panel-border: #e5e5e5;
+  --gf-text: #1a1a1a;
+  --gf-muted: #737373;
+  --gf-font: "SF Mono", "Cascadia Code", "Fira Code", "JetBrains Mono", "Consolas", monospace;
 }
 
 /* Account color bar */
@@ -30,21 +31,22 @@
   top: 14px !important;
   right: 88px !important;
   z-index: 2147483646 !important;
-  border: 1px solid color-mix(in srgb, var(--gf-account-color) 45%, #d7dbe2) !important;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--gf-account-color) 72%, #2b6df8) !important;
-  color: #fff !important;
-  padding: 8px 14px !important;
-  font: 700 12px/1.2 Arial, Helvetica, sans-serif !important;
+  border: 1px solid var(--gf-panel-border) !important;
+  border-radius: 4px;
+  background: #fff !important;
+  color: var(--gf-text) !important;
+  padding: 4px 10px !important;
+  font: 500 11px/1 var(--gf-font) !important;
   cursor: pointer !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24) !important;
-  opacity: 0.98;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: none !important;
+  opacity: 0.8;
+  transition: opacity 0.1s ease;
+  letter-spacing: 0.02em;
 }
 
 #gf-floating-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+  opacity: 1;
+  box-shadow: none !important;
 }
 
 /* Settings panel */
@@ -52,16 +54,17 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 340px;
+  width: 300px;
   height: 100vh;
   overflow: auto;
   z-index: 2147483646;
   background: var(--gf-panel-bg);
   border-left: 1px solid var(--gf-panel-border);
   transform: translateX(100%);
-  transition: transform 180ms ease;
+  transition: transform 150ms ease;
   color: var(--gf-text);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--gf-font);
+  font-size: 11px;
 }
 
 #gf-settings-panel.open {
@@ -70,7 +73,7 @@
 
 /* Profile bar */
 .gf-profile-bar {
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-bottom: 1px solid var(--gf-panel-border);
   background: #fff;
 }
@@ -78,7 +81,7 @@
 .gf-profile-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 4px;
 }
 
 .gf-profile-btn {
@@ -86,33 +89,34 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 8px 4px;
-  border: 2px solid var(--gf-panel-border);
-  border-radius: 10px;
+  padding: 6px 2px;
+  border: 1px solid var(--gf-panel-border);
+  border-radius: 3px;
   background: #fff;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.1s ease;
+  font-family: var(--gf-font);
 }
 
 .gf-profile-btn:hover {
-  border-color: var(--gf-account-color);
-  background: color-mix(in srgb, var(--gf-account-color) 5%, #fff);
+  border-color: var(--gf-text);
 }
 
 .gf-profile-btn.active {
-  border-color: var(--gf-account-color);
-  background: color-mix(in srgb, var(--gf-account-color) 10%, #fff);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--gf-text);
+  background: var(--gf-text);
+  color: #fff;
 }
 
 .gf-profile-icon {
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .gf-profile-label {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--gf-muted);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 /* Panel header */
@@ -121,7 +125,7 @@
   top: 0;
   background: var(--gf-panel-bg);
   border-bottom: 1px solid var(--gf-panel-border);
-  padding: 12px;
+  padding: 10px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -131,68 +135,73 @@
 
 .gf-panel-header h2 {
   margin: 0;
-  font-size: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .gf-panel-header p {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   color: var(--gf-muted);
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .gf-panel-header button {
-  border: 1px solid #d7dbe2;
+  border: 1px solid var(--gf-panel-border);
   background: #fff;
-  border-radius: 8px;
+  border-radius: 3px;
   cursor: pointer;
-  padding: 4px 8px;
-  font-size: 14px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-family: var(--gf-font);
 }
 
 /* Sections */
 .gf-section {
-  margin: 10px 12px;
-  padding: 10px;
+  margin: 8px 10px;
+  padding: 8px;
   border: 1px solid var(--gf-panel-border);
-  border-radius: 12px;
+  border-radius: 3px;
   background: #fff;
 }
 
 .gf-section h3 {
-  margin: 0 0 10px;
-  font-size: 11px;
+  margin: 0 0 8px;
+  font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--gf-muted);
+  font-weight: 500;
 }
 
 /* Fields */
 .gf-field {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .gf-field-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
 .gf-field-toggle span {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .gf-field-range label,
 .gf-field-text label {
   display: block;
-  margin-bottom: 6px;
-  font-size: 12px;
+  margin-bottom: 4px;
+  font-size: 10px;
+  color: var(--gf-muted);
 }
 
 .gf-range-wrap {
   display: grid;
-  grid-template-columns: 1fr 50px;
-  gap: 8px;
+  grid-template-columns: 1fr 40px;
+  gap: 6px;
   align-items: center;
 }
 
@@ -200,85 +209,91 @@
 .gf-field input[type="email"],
 .gf-field input[type="range"] {
   width: 100%;
+  font-family: var(--gf-font);
+  font-size: 11px;
 }
 
 .gf-field input[type="text"],
 .gf-field input[type="email"] {
-  border: 1px solid #d7dbe2;
-  border-radius: 8px;
-  padding: 6px 8px;
-  font-size: 12px;
+  border: 1px solid var(--gf-panel-border);
+  border-radius: 3px;
+  padding: 4px 6px;
+  background: #fff;
 }
 
 .gf-subtitle {
-  font-size: 11px;
+  font-size: 9px;
   color: var(--gf-muted);
-  margin: 8px 0 6px;
+  margin: 6px 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .gf-account-map-rows {
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
 .gf-map-row {
   display: grid;
-  grid-template-columns: 1fr 80px 24px;
-  gap: 6px;
+  grid-template-columns: 1fr 70px 20px;
+  gap: 4px;
   align-items: center;
 }
 
 .gf-map-row button,
 .gf-add-map-btn {
-  border: 1px solid #d7dbe2;
+  border: 1px solid var(--gf-panel-border);
   background: #fff;
-  border-radius: 8px;
+  border-radius: 3px;
   cursor: pointer;
-  padding: 4px 6px;
-  font-size: 11px;
+  padding: 2px 4px;
+  font-size: 10px;
+  font-family: var(--gf-font);
 }
 
 /* Email age badges */
 .gf-email-age {
   display: inline-block;
-  font: 600 10px/1 Arial, Helvetica, sans-serif;
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-left: 6px;
+  font: 500 9px/1 var(--gf-font);
+  padding: 1px 4px;
+  border-radius: 2px;
+  margin-left: 4px;
   vertical-align: middle;
+  letter-spacing: 0.02em;
 }
 
 .gf-age-fresh {
-  background: #e6f4ea;
-  color: #1e8e3e;
+  background: #dcfce7;
+  color: #166534;
 }
 
 .gf-age-recent {
-  background: #e8f0fe;
-  color: #1967d2;
+  background: #dbeafe;
+  color: #1e40af;
 }
 
 .gf-age-aging {
-  background: #fef7e0;
-  color: #e37400;
+  background: #fef9c3;
+  color: #854d0e;
 }
 
 .gf-age-stale {
-  background: #fce8e6;
-  color: #c5221f;
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .gf-age-old {
-  background: #f1f3f4;
-  color: #5f6368;
+  background: #f3f4f6;
+  color: #374151;
 }
 
 /* Priority badges */
 .gf-priority-badge {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 8px;
+  top: 3px;
+  right: 3px;
+  font-size: 7px;
   line-height: 1;
 }
 
@@ -290,43 +305,53 @@
   right: 0;
   bottom: 0;
   z-index: 2147483647;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.92);
   display: flex;
   flex-direction: column;
+  font-family: var(--gf-font);
 }
 
 .gf-flow-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
   color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .gf-flow-title {
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .gf-flow-hint {
-  font-size: 11px;
-  opacity: 0.7;
+  font-size: 10px;
+  opacity: 0.5;
+  letter-spacing: 0.02em;
 }
 
 .gf-flow-close {
   background: none;
   border: none;
   color: #fff;
-  font-size: 18px;
+  font-size: 14px;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 2px 6px;
+  opacity: 0.5;
+}
+
+.gf-flow-close:hover {
+  opacity: 1;
 }
 
 .gf-flow-content {
   flex: 1;
   overflow: auto;
-  padding: 16px;
+  padding: 12px;
   color: #fff;
 }
 
@@ -334,25 +359,34 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
   color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .gf-flow-prev,
 .gf-flow-next {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 4px 12px;
+  border-radius: 3px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 11px;
+  font-family: var(--gf-font);
+  letter-spacing: 0.02em;
+}
+
+.gf-flow-prev:hover,
+.gf-flow-next:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .gf-flow-count {
-  font-size: 12px;
-  opacity: 0.7;
+  font-size: 10px;
+  opacity: 0.5;
+  letter-spacing: 0.04em;
 }
 
 /* Inbox row calm behavior */
@@ -477,54 +511,65 @@ html.gf-reduced-motion * {
 
 /* Dark mode */
 html.gf-dark-mode {
-  --gf-panel-bg: #1a1a2e;
-  --gf-panel-border: #2d2d44;
-  --gf-text: #e0e0e0;
-  --gf-muted: #a0a0a0;
+  --gf-panel-bg: #0a0a0a;
+  --gf-panel-border: #1a1a1a;
+  --gf-text: #e5e5e5;
+  --gf-muted: #737373;
 }
 
 html.gf-dark-mode body,
 html.gf-dark-mode [role="main"] {
-  background: #1a1a2e !important;
-  color: #e0e0e0 !important;
+  background: #0a0a0a !important;
+  color: #e5e5e5 !important;
 }
 
 html.gf-dark-mode [role="main"] [role="row"]:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
 }
 
 html.gf-dark-mode #gf-settings-panel {
-  background: #1a1a2e;
-  color: #e0e0e0;
-  border-left-color: #2d2d44;
+  background: #0a0a0a;
+  color: #e5e5e5;
+  border-left-color: #1a1a1a;
 }
 
 html.gf-dark-mode .gf-section {
-  background: #2d2d44;
-  border-color: #3d3d54;
+  background: #111;
+  border-color: #1a1a1a;
 }
 
 html.gf-dark-mode .gf-profile-bar {
-  background: #2d2d44;
-  border-bottom-color: #3d3d54;
+  background: #111;
+  border-bottom-color: #1a1a1a;
 }
 
 html.gf-dark-mode .gf-profile-btn {
-  background: #2d2d44;
-  border-color: #3d3d54;
-  color: #e0e0e0;
+  background: #111;
+  border-color: #1a1a1a;
+  color: #e5e5e5;
+}
+
+html.gf-dark-mode .gf-profile-btn.active {
+  background: #e5e5e5;
+  color: #0a0a0a;
 }
 
 html.gf-dark-mode .gf-panel-header {
-  background: #1a1a2e;
-  border-bottom-color: #2d2d44;
+  background: #0a0a0a;
+  border-bottom-color: #1a1a1a;
 }
 
 html.gf-dark-mode .gf-field input[type="text"],
 html.gf-dark-mode .gf-field input[type="email"] {
-  background: #1a1a2e;
-  border-color: #3d3d54;
-  color: #e0e0e0;
+  background: #0a0a0a;
+  border-color: #1a1a1a;
+  color: #e5e5e5;
+}
+
+html.gf-dark-mode #gf-floating-button {
+  background: #111 !important;
+  border-color: #1a1a1a !important;
+  color: #e5e5e5 !important;
 }
 
 /* Inbox hidden message */
@@ -533,17 +578,19 @@ html.gf-hide-inbox [role="main"] {
 }
 
 html.gf-hide-inbox::before {
-  content: "Inbox hidden for focus.";
+  content: "> inbox hidden";
   position: fixed;
   top: 72px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2147483645;
   background: #fff;
-  border: 1px solid #dadce0;
-  border-radius: 10px;
-  padding: 10px 14px;
-  font: 600 13px/1.3 Arial, Helvetica, sans-serif;
+  border: 1px solid var(--gf-panel-border);
+  border-radius: 3px;
+  padding: 6px 12px;
+  font: 500 11px/1 var(--gf-font);
+  color: var(--gf-muted);
+  letter-spacing: 0.02em;
 }
 
 /* Pause inbox */
