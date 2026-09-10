@@ -11,6 +11,7 @@
       "css": ["src/styles.css"],
       "js": [
         "src/utils.js",
+        "src/helpers.js",
         "src/features/cleanup.js",
         "src/features/focus.js",
         "src/features/highlighting.js",

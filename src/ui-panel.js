@@ -269,62 +269,28 @@
     wrap.className = "gf-section";
     wrap.innerHTML = `<h3>${sectionTitle("surgery")}</h3>`;
 
-    const toggleAll = document.createElement("label");
-    toggleAll.className = "gf-field gf-field-toggle";
-    toggleAll.innerHTML = `
-      <span>Enable aggressive surgery</span>
-      <input type="checkbox" ${settings.aggressiveSurgery ? "checked" : ""} data-key="aggressiveSurgery" />
-    `;
-    toggleAll.querySelector('input').addEventListener('change', (e) => {
-      emitSettingsPatch({ aggressiveSurgery: e.target.checked });
-    });
-    wrap.appendChild(toggleAll);
-
-    const surgeryOptions = [
-      { key: "aggressiveRightSidebar", label: "Remove right sidebar" },
-      { key: "removeTopBanner", label: "Remove top banner" },
-      { key: "removePromoTab", label: "Remove Promotions tab" },
-      { key: "removeMeetTab", label: "Remove Meet tab" },
-      { key: "removeSpacesTab", label: "Remove Spaces tab" },
-      { key: "removeChatWidget", label: "Remove chat widget" },
-      { key: "removeComposeArea", label: "Remove compose area" },
-      { key: "removeLeftNav", label: "Remove left navigation" },
-      { key: "removeSearch", label: "Remove search bar" },
-      { key: "removeHelp", label: "Remove help button" },
-      { key: "removeSettingsGear", label: "Remove settings gear" },
-      { key: "removeAboutMe", label: "Remove profile picture" },
-      { key: "removeUpgrade", label: "Remove upgrade button" },
-      { key: "removePromotionalCards", label: "Remove promotional cards" },
-      { key: "removeCategories", label: "Remove category tabs" },
-      { key: "removeInboxLabels", label: "Remove email labels" },
-      { key: "simplifyEmailList", label: "Simplify email list" },
-      { key: "removeFooter", label: "Remove footer" },
+    const presets = [
+      { id: 'none', label: 'None', desc: 'Keep all Gmail elements' },
+      { id: 'minimal', label: 'Minimal', desc: 'Remove sidebar, Meet, Spaces' },
+      { id: 'moderate', label: 'Moderate', desc: 'Remove clutter + tabs + help' },
+      { id: 'aggressive', label: 'Aggressive', desc: 'Strip everything non-essential' },
     ];
 
-    const optionsWrap = document.createElement("div");
-    optionsWrap.className = "gf-surgery-options";
-    optionsWrap.style.opacity = settings.aggressiveSurgery ? '1' : '0.5';
-    optionsWrap.style.pointerEvents = settings.aggressiveSurgery ? 'auto' : 'none';
-
-    surgeryOptions.forEach(opt => {
-      const row = document.createElement("label");
-      row.className = "gf-field gf-field-toggle gf-field-small";
-      row.innerHTML = `
-        <span>${opt.label}</span>
-        <input type="checkbox" ${settings[opt.key] ? "checked" : ""} data-key="${opt.key}" />
-      `;
-      row.querySelector('input').addEventListener('change', (e) => {
-        emitSettingsPatch({ [opt.key]: e.target.checked });
+    const presetGrid = document.createElement("div");
+    presetGrid.className = "gf-surgery-grid";
+    presets.forEach(preset => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `gf-surgery-btn ${settings.surgeryMode === preset.id ? "active" : ""}`;
+      btn.innerHTML = `<span class="gf-surgery-name">${preset.label}</span><span class="gf-surgery-desc">${preset.desc}</span>`;
+      btn.addEventListener("click", () => {
+        presetGrid.querySelectorAll('.gf-surgery-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        emitSettingsPatch({ surgeryMode: preset.id });
       });
-      optionsWrap.appendChild(row);
+      presetGrid.appendChild(btn);
     });
-
-    toggleAll.querySelector('input').addEventListener('change', (e) => {
-      optionsWrap.style.opacity = e.target.checked ? '1' : '0.5';
-      optionsWrap.style.pointerEvents = e.target.checked ? 'auto' : 'none';
-    });
-
-    wrap.appendChild(optionsWrap);
+    wrap.appendChild(presetGrid);
     return wrap;
   }
 

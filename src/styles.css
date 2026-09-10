@@ -730,3 +730,45 @@ html.gf-highlight-unread-only [role="main"] [role="row"][data-gf-read] {
 .gf-field-small span {
   font-size: 10px;
 }
+
+/* Surgery preset grid */
+.gf-surgery-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.gf-surgery-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 6px 8px;
+  border: 1px solid var(--gf-panel-border);
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  text-align: left;
+}
+
+.gf-surgery-btn:hover {
+  border-color: var(--gf-text);
+}
+
+.gf-surgery-btn.active {
+  border-color: var(--gf-text);
+  background: var(--gf-text);
+  color: #fff;
+}
+
+.gf-surgery-name {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.gf-surgery-desc {
+  font-size: 8px;
+  opacity: 0.6;
+  line-height: 1.2;
+}

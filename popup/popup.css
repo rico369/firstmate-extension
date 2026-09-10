@@ -10,7 +10,7 @@ body {
 }
 
 .container {
-  width: 240px;
+  width: 200px;
   padding: 10px;
 }
 
@@ -98,6 +98,15 @@ h1 {
   accent-color: #1a1a1a;
 }
 
+/* Open panel hint */
+.open-panel {
+  font-size: 9px;
+  color: #737373;
+  text-align: center;
+  margin: 6px 0;
+  letter-spacing: 0.02em;
+}
+
 /* Status */
 .status {
   min-height: 14px;
@@ -120,87 +129,5 @@ h1 {
 }
 
 .footer-link:hover {
-  color: #1a1a1a;
-}
-
-/* Section labels */
-.section-label {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #737373;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-/* Typography section */
-.typography-section {
-  margin-bottom: 8px;
-  padding: 8px;
-  border: 1px solid #e5e5e5;
-  border-radius: 3px;
-  background: #fff;
-}
-
-.field-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-
-.field-row:last-child {
-  margin-bottom: 0;
-}
-
-.field-row label {
-  font-size: 9px;
-  color: #737373;
-  min-width: 50px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.field-row input[type="range"] {
-  flex: 1;
-  height: 4px;
-  accent-color: #1a1a1a;
-}
-
-.field-row output {
-  font-size: 9px;
-  color: #1a1a1a;
-  min-width: 30px;
-  text-align: right;
-}
-
-.field-row select {
-  flex: 1;
-  font-family: inherit;
-  font-size: 9px;
-  border: 1px solid #e5e5e5;
-  border-radius: 3px;
-  padding: 3px 4px;
-  background: #fff;
-  color: #1a1a1a;
-}
-
-/* Tint section */
-.tint-section {
-  margin-bottom: 8px;
-  padding: 8px;
-  border: 1px solid #e5e5e5;
-  border-radius: 3px;
-  background: #fff;
-}
-
-.tint-section select {
-  width: 100%;
-  font-family: inherit;
-  font-size: 9px;
-  border: 1px solid #e5e5e5;
-  border-radius: 3px;
-  padding: 3px 4px;
-  background: #fff;
   color: #1a1a1a;
 }

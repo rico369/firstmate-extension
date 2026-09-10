@@ -1,43 +1,12 @@
 (() => {
   const NS = (window.GmailFlowFeatures = window.GmailFlowFeatures || {});
-
-  const ROW_SELECTORS = [
-    '[role="main"] [role="row"]',
-    '[role="main"] tr[role="row"]',
-    '[role="main"] div[role="row"]',
-  ];
+  const { getMailRows, rowText, isUnread } = window.GmailFlowHelpers;
 
   const PRIORITY_KEYWORDS = {
     urgent: ["urgent", "asap", "immediately", "critical", "emergency", "deadline"],
     high: ["action required", "please respond", "follow up", "waiting for", "overdue", "late"],
     medium: ["review", "update", "meeting", "schedule", "confirm", "approval"],
   };
-
-  function getMailRows() {
-    const seen = new Set();
-    ROW_SELECTORS.forEach((selector) => {
-      document.querySelectorAll(selector).forEach((row) => {
-        if (!row || seen.has(row)) return;
-        const text = (row.textContent || "").trim();
-        if (text.length < 8) return;
-        seen.add(row);
-      });
-    });
-    return Array.from(seen);
-  }
-
-  function rowText(row) {
-    return (row.textContent || "").toLowerCase();
-  }
-
-  function isUnread(row) {
-    const ariaLabel = `${row.getAttribute("aria-label") || ""} ${row.getAttribute("title") || ""}`.toLowerCase();
-    const text = rowText(row);
-    const explicitUnread = row.querySelector(
-      '[aria-label*="Unread"], [aria-label*="unread"], [title*="Unread"], [title*="unread"]'
-    );
-    return Boolean(explicitUnread || ariaLabel.includes("unread") || text.includes("unread"));
-  }
 
   function isStarred(row) {
     return Boolean(
@@ -64,14 +33,10 @@
 
   function getPriorityIcon(priority) {
     switch (priority) {
-      case "urgent":
-        return "🔴";
-      case "high":
-        return "🟠";
-      case "medium":
-        return "🟡";
-      default:
-        return "";
+      case "urgent": return "\u{1F534}";
+      case "high": return "\u{1F7E0}";
+      case "medium": return "\u{1F7E1}";
+      default: return "";
     }
   }
 
