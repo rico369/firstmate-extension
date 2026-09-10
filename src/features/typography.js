@@ -1,97 +1,120 @@
 /**
  * Gmail Flow - Typography Engine
- * DOM-level font override that actually beats Gmail's inline styles
+ * 3-layer defense: CSS injection + setInterval re-apply + MutationObserver guard
  */
 (function () {
   if (window.GmailFlowTypography) return;
   window.GmailFlowTypography = true;
 
+  let styleTag = null;
   let observer = null;
+  let intervalId = null;
   let activeSettings = null;
 
-  const TARGETED_SELECTORS = [
+  const GMAIL_SELECTORS = [
+    'tr.zA span.bog',
+    'tr.zA span.yP',
+    'tr.zA span.zF',
+    'tr.zA span.y6',
+    'tr.zA span.n6',
     '.a3s',
     '.gs .a3s',
-    '.ii.gt',
+    '.ii.gt div',
     '.a3s .gmail_extra',
     '.a3s .gmail_quote',
-    '.a3s [style*="font-family"]',
-    '.a3s [style*="font-size"]',
+    '.hP',
+    '.ha h2',
+    '.hi',
     '.gB',
     '.gE',
     '.gE .gF',
-    '.hi',
     '.iY .gs',
     '.gs',
+    '.bog',
+    '.bog span',
+    '[role="main"] span.bog',
+    '[role="main"] span.yP',
+    '[role="main"] span.zF',
+    '[role="main"] span.y6',
   ];
 
-  function stripInlineStyles(el) {
-    if (!el || !el.style) return;
-    const computed = window.getComputedStyle(el);
-    const importantProps = ['fontFamily', 'fontSize', 'lineHeight', 'letterSpacing', 'wordSpacing'];
-    importantProps.forEach(prop => {
-      el.style.removeProperty(prop.replace(/([A-Z])/g, '-$1').toLowerCase());
-    });
-    el.removeAttribute('style');
-  }
-
-  function applyFontToElement(el, settings) {
-    if (!el || !el.style) return;
+  function buildCSS(settings) {
     const fontStack = `"${settings.fontFamily}", system-ui, sans-serif`;
-    el.style.setProperty('font-family', fontStack, 'important');
-    el.style.setProperty('font-size', `${settings.fontSize}px`, 'important');
-    el.style.setProperty('line-height', String(settings.lineHeight), 'important');
-    el.style.setProperty('letter-spacing', `${settings.letterSpacing}px`, 'important');
-    el.style.setProperty('word-spacing', `${settings.wordSpacing}px`, 'important');
-    el.style.setProperty('text-align', 'left', 'important');
+    const selector = GMAIL_SELECTORS.join(',\n');
+    return `
+${selector} {
+  font-family: ${fontStack} !important;
+  font-size: ${settings.fontSize}px !important;
+  line-height: ${settings.lineHeight} !important;
+  letter-spacing: ${settings.letterSpacing}px !important;
+  word-spacing: ${settings.wordSpacing}px !important;
+  text-align: left !important;
+}
+.a3s * {
+  font-family: ${fontStack} !important;
+  letter-spacing: ${settings.letterSpacing}px !important;
+  word-spacing: ${settings.wordSpacing}px !important;
+  line-height: ${settings.lineHeight} !important;
+}
+.a3s {
+  font-size: ${settings.fontSize}px !important;
+}
+.ha h2, .bog, .bog span {
+  font-size: ${settings.fontSize + 2}px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+}`;
   }
 
-  function applyTypography() {
-    if (!activeSettings || activeSettings.enhancedTypography === false) return;
+  function injectStyleTag(css) {
+    if (!styleTag || !styleTag.parentNode) {
+      styleTag = document.getElementById('gmail-flow-typography');
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = 'gmail-flow-typography';
+        (document.head || document.documentElement).appendChild(styleTag);
+      }
+    }
+    if (styleTag.textContent !== css) {
+      styleTag.textContent = css;
+    }
+  }
 
-    const fontStack = `"${activeSettings.fontFamily}", system-ui, sans-serif`;
-
-    TARGETED_SELECTORS.forEach(selector => {
+  function applyDomStyles(settings) {
+    const fontStack = `"${settings.fontFamily}", system-ui, sans-serif`;
+    GMAIL_SELECTORS.forEach(selector => {
       document.querySelectorAll(selector).forEach(el => {
-        applyFontToElement(el, activeSettings);
+        if (el.closest('#gf-settings-panel') || el.closest('.gmail-flow-panel')) return;
+        el.style.setProperty('font-family', fontStack, 'important');
+        el.style.setProperty('font-size', `${settings.fontSize}px`, 'important');
+        el.style.setProperty('line-height', String(settings.lineHeight), 'important');
+        el.style.setProperty('letter-spacing', `${settings.letterSpacing}px`, 'important');
+        el.style.setProperty('word-spacing', `${settings.wordSpacing}px`, 'important');
       });
     });
-
     document.querySelectorAll('.a3s *').forEach(el => {
-      const computed = window.getComputedStyle(el);
+      if (el.closest('#gf-settings-panel') || el.closest('.gmail-flow-panel')) return;
       const tag = el.tagName.toLowerCase();
-      if (tag === 'br' || tag === 'hr' || tag === 'img' || tag === 'table') return;
-      if (el.closest('.gmail-flow-panel') || el.closest('#gf-settings-panel')) return;
-
+      if (tag === 'br' || tag === 'hr' || tag === 'img') return;
       el.style.setProperty('font-family', fontStack, 'important');
-      if (tag !== 'span' || el.style.fontSize) {
-        el.style.setProperty('font-size', `${activeSettings.fontSize}px`, 'important');
-      }
-      el.style.setProperty('line-height', String(activeSettings.lineHeight), 'important');
-      el.style.setProperty('letter-spacing', `${activeSettings.letterSpacing}px`, 'important');
-      el.style.setProperty('word-spacing', `${activeSettings.wordSpacing}px`, 'important');
+      el.style.setProperty('line-height', String(settings.lineHeight), 'important');
+      el.style.setProperty('letter-spacing', `${settings.letterSpacing}px`, 'important');
+      el.style.setProperty('word-spacing', `${settings.wordSpacing}px`, 'important');
     });
+  }
 
-    const widthMap = { narrow: '520px', comfortable: '680px', wide: '860px', full: '100%' };
-    const maxWidth = widthMap[activeSettings.textWidth] || '680px';
-    document.querySelectorAll('.nH .nH .no, .a3s, .gs .a3s, .iY .gs').forEach(el => {
-      el.style.setProperty('max-width', maxWidth, 'important');
-      el.style.setProperty('margin', '0 auto', 'important');
-    });
-
-    document.querySelectorAll('.ha h2, .bog, .bog span').forEach(el => {
-      el.style.setProperty('font-size', `${activeSettings.fontSize + 2}px`, 'important');
-      el.style.setProperty('font-weight', '600', 'important');
-      el.style.setProperty('line-height', '1.3', 'important');
-    });
+  function applyAll() {
+    if (!activeSettings || activeSettings.enhancedTypography === false) return;
+    const css = buildCSS(activeSettings);
+    injectStyleTag(css);
+    applyDomStyles(activeSettings);
   }
 
   function remove() {
+    if (styleTag) { styleTag.remove(); styleTag = null; }
     if (observer) { observer.disconnect(); observer = null; }
+    if (intervalId) { clearInterval(intervalId); intervalId = null; }
     activeSettings = null;
-    document.querySelectorAll('[data-gf-font]').forEach(el => {
-      el.removeAttribute('data-gf-font');
-    });
   }
 
   function apply(settings) {
@@ -100,13 +123,20 @@
       return;
     }
     activeSettings = settings;
-    applyTypography();
+    applyAll();
+
+    if (!intervalId) {
+      intervalId = setInterval(applyAll, 500);
+    }
 
     if (!observer) {
       observer = new MutationObserver(() => {
-        requestAnimationFrame(applyTypography);
+        if (!styleTag || !styleTag.parentNode) {
+          styleTag = null;
+          applyAll();
+        }
       });
-      observer.observe(document.body, { childList: true, subtree: true });
+      observer.observe(document.head || document.documentElement, { childList: true });
     }
   }
 

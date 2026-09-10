@@ -1,12 +1,14 @@
 /**
  * Gmail Flow - Background Tints
- * DOM-level background override that beats Gmail's inline styles
+ * 3-layer defense: CSS injection + setInterval re-apply + MutationObserver guard
  */
 (function () {
   if (window.GmailFlowTints) return;
   window.GmailFlowTints = true;
 
+  let styleTag = null;
   let observer = null;
+  let intervalId = null;
   let activeSettings = null;
 
   const TINTS = {
@@ -25,109 +27,98 @@
     midnight:   { bg: '#0A0A1A', text: '#B0B8D0' },
   };
 
-  const BACKGROUND_SELECTORS = [
-    'html',
-    'body',
-    '.nH',
-    '.nH .nH',
-    '.nH .nH .nH',
-    '.nH .nH .no',
-    '.Tm.aeJ',
-    '.aoP',
-    '.ao9',
-    '.Nr.aeJ',
-    '.Bk',
-    '.aeJ',
-    '.Cp',
-    '.TRS',
-    '.ip',
-    '.AO',
-    '.aJ8',
-    '.yW',
-    '.zF',
-    '.adn',
-    '.adn .gs',
-    '.iP',
-    '.h7',
-    '.n6',
-    '.bog',
-    '[role="main"]',
-    '[role="navigation"]',
-    '.gb_g',
-    '.gb_h',
-    '.gb_Cd',
-    '.gb_bd',
+  const BG_SELECTORS = [
+    'html', 'body',
+    '.nH', '.nH .nH', '.nH .nH .nH', '.nH .nH .no',
+    '.Tm.aeJ', '.aoP', '.ao9', '.Nr.aeJ',
+    '.Bk', '.aeJ', '.Cp', '.TRS', '.ip', '.AO',
+    '.aJ8', '.h7', '.n6',
+    '[role="main"]', '[role="navigation"]',
+    '.gb_g', '.gb_h', '.gb_Cd', '.gb_bd',
   ];
 
   const TEXT_SELECTORS = [
-    '.bog',
-    '.bog span',
-    '.n6',
-    '.n6 span',
-    '.yW span',
-    '.yW b',
-    '.a3s',
-    '.a3s .gmail_extra',
-    '.a3s .gmail_quote',
-    '.zF',
-    '.y6',
-    '.y6 span',
-    '.gD',
-    '.gF',
-    '.gF span',
-    '.bA4',
-    '.bA4 span',
-    '.gI',
-    '[role="link"]',
-    '[role="gridcell"]',
-    '[role="listitem"]',
-    '.TC',
-    '.adn .gs .gB',
-    '.iY .gs .gB',
+    '.bog', '.bog span',
+    '.n6', '.n6 span',
+    '.yW span', '.yW b',
+    '.a3s', '.a3s .gmail_extra', '.a3s .gmail_quote',
+    '.zF', '.y6', '.y6 span',
+    '.gD', '.gF', '.gF span',
+    '.bA4', '.bA4 span',
+    '.gI', '[role="link"]',
+    '[role="gridcell"]', '[role="listitem"]',
+    '.TC', '.adn .gs .gB', '.iY .gs .gB',
   ];
 
-  function applyTint() {
-    if (!activeSettings) return;
-    const tint = activeSettings.backgroundTint || 'none';
+  function buildCSS(settings) {
+    const tint = settings.backgroundTint || 'none';
+    const colors = TINTS[tint];
+    if (!colors) return '';
+
+    const textColor = settings.tintTextColor || colors.text;
+    const bgSelector = BG_SELECTORS.join(',\n');
+    const textSelector = TEXT_SELECTORS.join(',\n');
+
+    return `
+${bgSelector} {
+  background-color: ${colors.bg} !important;
+  background: ${colors.bg} !important;
+}
+${textSelector} {
+  color: ${textColor} !important;
+}`;
+  }
+
+  function injectStyleTag(css) {
+    if (!styleTag || !styleTag.parentNode) {
+      styleTag = document.getElementById('gmail-flow-tint');
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = 'gmail-flow-tint';
+        (document.head || document.documentElement).appendChild(styleTag);
+      }
+    }
+    if (styleTag.textContent !== css) {
+      styleTag.textContent = css;
+    }
+  }
+
+  function applyDomStyles(settings) {
+    const tint = settings.backgroundTint || 'none';
     const colors = TINTS[tint];
     if (!colors) return;
 
-    BACKGROUND_SELECTORS.forEach(selector => {
+    const textColor = settings.tintTextColor || colors.text;
+
+    BG_SELECTORS.forEach(selector => {
       document.querySelectorAll(selector).forEach(el => {
-        if (el.closest('.gmail-flow-panel') || el.closest('#gf-settings-panel')) return;
+        if (el.closest('#gf-settings-panel') || el.closest('.gmail-flow-panel')) return;
         el.style.setProperty('background-color', colors.bg, 'important');
         el.style.setProperty('background', colors.bg, 'important');
       });
     });
 
-    const textColor = activeSettings.tintTextColor || colors.text;
     TEXT_SELECTORS.forEach(selector => {
       document.querySelectorAll(selector).forEach(el => {
-        if (el.closest('.gmail-flow-panel') || el.closest('#gf-settings-panel')) return;
+        if (el.closest('#gf-settings-panel') || el.closest('.gmail-flow-panel')) return;
         el.style.setProperty('color', textColor, 'important');
       });
     });
+  }
 
-    document.documentElement.style.setProperty('--gf-bg-tint', colors.bg);
-    document.documentElement.style.setProperty('--gf-text-tint', textColor);
+  function applyAll() {
+    if (!activeSettings || !activeSettings.backgroundTint || activeSettings.backgroundTint === 'none') return;
+    const css = buildCSS(activeSettings);
+    if (!css) return;
+    injectStyleTag(css);
+    applyDomStyles(activeSettings);
   }
 
   function remove() {
+    if (styleTag) { styleTag.remove(); styleTag = null; }
     if (observer) { observer.disconnect(); observer = null; }
+    if (intervalId) { clearInterval(intervalId); intervalId = null; }
     activeSettings = null;
-    BACKGROUND_SELECTORS.forEach(selector => {
-      document.querySelectorAll(selector).forEach(el => {
-        el.style.removeProperty('background-color');
-        el.style.removeProperty('background');
-      });
-    });
-    TEXT_SELECTORS.forEach(selector => {
-      document.querySelectorAll(selector).forEach(el => {
-        el.style.removeProperty('color');
-      });
-    });
-    document.documentElement.style.removeProperty('--gf-bg-tint');
-    document.documentElement.style.removeProperty('--gf-text-tint');
   }
 
   function apply(settings) {
@@ -136,13 +127,20 @@
       return;
     }
     activeSettings = settings;
-    applyTint();
+    applyAll();
+
+    if (!intervalId) {
+      intervalId = setInterval(applyAll, 500);
+    }
 
     if (!observer) {
       observer = new MutationObserver(() => {
-        requestAnimationFrame(applyTint);
+        if (!styleTag || !styleTag.parentNode) {
+          styleTag = null;
+          applyAll();
+        }
       });
-      observer.observe(document.body, { childList: true, subtree: true });
+      observer.observe(document.head || document.documentElement, { childList: true });
     }
   }
 
